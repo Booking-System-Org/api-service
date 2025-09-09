@@ -4,7 +4,7 @@ import { BookingEntity } from './booking.entity';
 import { Transactional } from 'src/common/types';
 import { BookingRepository } from './booking.repository';
 import { CreateBookingDto } from './dtos';
-import { KafkaService } from 'src/infra/kafka/kafka.service';
+import { KafkaProducerService } from 'src/infra/kafka/kafka.producer.service';
 import { CreateBookingEvent } from 'src/infra/kafka/kafka.contracts';
 import { ConfigService } from '@nestjs/config';
 import { KafkaMessage } from 'src/infra/kafka/types';
@@ -15,7 +15,7 @@ export class BookingService {
 
   constructor(
     private readonly bookingRepository: BookingRepository,
-    private readonly kafkaService: KafkaService,
+    private readonly kafkaService: KafkaProducerService,
     private readonly configService: ConfigService,
   ) {
     this.logger = new Logger(BookingService.name);
@@ -61,23 +61,22 @@ export class BookingService {
     }
   }
 
-  private async sendBookingCreatedEvent(bookingData: CreateBookingEvent): Promise<void> {
+  private sendBookingCreatedEvent(bookingData: CreateBookingEvent): void {
     const topic = this.configService.getOrThrow<string>('kafka.defaultTopic');
+    const eventType = 'BOOKING_CREATED';
     const message: KafkaMessage = {
-        topic,
-        // key: bookingData.id,
         value: JSON.stringify({
-            eventType: 'BOOKING_CREATED',
+            eventType,
             data: bookingData,
             timestamp: new Date().toISOString(),
         }),
         headers: {
-            'event-type': 'BOOKING_CREATED',
+            'event-type': eventType,
             'service': 'api-service',
         },
     };
 
     this.logger.debug(`Sending booking created event to Kafka: ${JSON.stringify(message)}`);
-    await this.kafkaService.sendMessage(message);
+    this.kafkaService.emitEvent(eventType, message, topic);
   }
 }
