@@ -65,7 +65,7 @@ export class BookingService {
     const topic = this.configService.getOrThrow<string>('kafka.defaultTopic');
     const message: KafkaMessage = {
         topic,
-        key: bookingData.id,
+        // key: bookingData.id,
         value: JSON.stringify({
             eventType: 'BOOKING_CREATED',
             data: bookingData,
@@ -77,6 +77,7 @@ export class BookingService {
         },
     };
 
+    this.logger.debug(`Sending booking created event to Kafka: ${JSON.stringify(message)}`);
     await this.kafkaService.sendMessage(message);
-}
+  }
 }
