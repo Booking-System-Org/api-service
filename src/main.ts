@@ -23,6 +23,8 @@ async function bootstrap() {
 
   app.useGlobalFilters(new ValidationExceptionFilter());
 
+  app.enableShutdownHooks();
+
   const NODE_ENV = configService.getOrThrow('service.appEnv');
   const logLevels: LogLevel[] = ['error', 'warn', 'log', 'verbose'];
   if (NODE_ENV === 'development') {

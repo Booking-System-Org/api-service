@@ -4,8 +4,10 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import svcConfig from './config/svc.config';
 import dbConfig from './config/db-config/db-config';
+import kafkaConfig from './config/kafka.config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { BookingModule } from './modules/booking';
+import { KafkaModule } from './infra/kafka';
 
 @Module({
   imports: [
@@ -13,7 +15,7 @@ import { BookingModule } from './modules/booking';
       envFilePath: ['.env'],
       isGlobal: true,
       cache: true,
-      load: [svcConfig, dbConfig],
+      load: [svcConfig, dbConfig, kafkaConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -23,7 +25,8 @@ import { BookingModule } from './modules/booking';
         return dbConfig;
       },
     }),
-    BookingModule
+    BookingModule,
+    KafkaModule
   ],
   controllers: [AppController],
   providers: [AppService],

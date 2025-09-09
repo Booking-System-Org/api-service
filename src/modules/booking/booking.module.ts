@@ -4,9 +4,10 @@ import { BookingEntity } from './booking.entity';
 import { BookingRepository } from './booking.repository';
 import { BookingService } from './booking.service';
 import { BookingController } from './booking.controller';
+import { KafkaModule } from 'src/infra/kafka';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BookingEntity])],
+  imports: [TypeOrmModule.forFeature([BookingEntity]), KafkaModule],
   providers: [BookingRepository, BookingService],
   exports: [BookingService],
   controllers: [BookingController],
