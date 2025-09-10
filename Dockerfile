@@ -11,6 +11,5 @@ RUN npm run build
 
 FROM node:23-alpine AS dev
 WORKDIR /home/node
-ENV NODE_ENV=development
 
 COPY --chown=node:node . .
