@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  api-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: api-service
+    restart: on-failure
+    command: npm run start
+    ports:
+      - "${APP_PORT}:${APP_PORT}" 
+    volumes:
+      - .:/home/node
+      - node_modules:/home/node/node_modules
+    networks:
+      - booking-network
+
+networks:
+  booking-network:
+    name: booking-network
+    driver: bridge
+    external: true
+
+volumes:
+  node_modules:
