@@ -8,6 +8,7 @@ import { KafkaProducerService } from 'src/infra/kafka/kafka.producer.service';
 import { CreateBookingEvent } from 'src/infra/kafka/kafka.contracts';
 import { ConfigService } from '@nestjs/config';
 import { KafkaMessage } from 'src/infra/kafka/types';
+import { KafkaTopics } from 'src/infra/kafka/constants';
 
 @Injectable()
 export class BookingService {
@@ -62,21 +63,18 @@ export class BookingService {
   }
 
   private sendBookingCreatedEvent(bookingData: CreateBookingEvent): void {
-    const topic = this.configService.getOrThrow<string>('kafka.defaultTopic');
-    const eventType = 'BOOKING_CREATED';
+    const topic = KafkaTopics.bookingCreated;
     const message: KafkaMessage = {
         value: JSON.stringify({
-            eventType,
             data: bookingData,
             timestamp: new Date().toISOString(),
         }),
         headers: {
-            'event-type': eventType,
             'service': 'api-service',
         },
     };
 
     this.logger.debug(`Sending booking created event to Kafka: ${JSON.stringify(message)}`);
-    this.kafkaService.emitEvent(eventType, message, topic);
+    this.kafkaService.emitEvent(message, topic);
   }
 }

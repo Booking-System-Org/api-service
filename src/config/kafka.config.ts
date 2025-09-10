@@ -7,5 +7,4 @@ export default registerAs('kafka', (): KafkaConfig => ({
         : ['kafka:9092']
     ),
     clientId: process.env.KAFKA_CLIENT_ID || 'api-service',
-    defaultTopic: process.env.KAFKA_DEFAULT_TOPIC || 'booking-events',
 }));

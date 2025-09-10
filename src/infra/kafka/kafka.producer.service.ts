@@ -1,18 +1,15 @@
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { ConfigService } from '@nestjs/config';
+import { KafkaTopics } from './constants';
 
 @Injectable()
 export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(KafkaProducerService.name);
-    private readonly defaultTopic: string;
+    private readonly defaultTopic = KafkaTopics.default;
 
     constructor(
         @Inject('KAFKA_CLIENT') private readonly client: ClientKafka,
-        private readonly configService: ConfigService,
-    ) {
-        this.defaultTopic = this.configService.getOrThrow<string>('kafka.defaultTopic');
-    }
+    ) {}
 
     async onModuleInit(): Promise<void> {
         await this.client.connect();
@@ -28,21 +25,9 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
         }
     }
 
-    emitEvent<T extends object>(eventType: string, payload: T, topic = this.defaultTopic): void {
+    public emitEvent<T extends object>(payload: T, topic = this.defaultTopic): void {
         this.client.emit(topic, JSON.stringify(payload));
-
-        // await new Promise<void>((resolve, reject) => {
-        //     try {
-        //         this.client.emit(topic, message).subscribe({
-        //             complete: () => resolve(),
-        //             error: (err) => reject(err),
-        //         });
-        //     } catch (e) {
-        //         reject(e);
-        //     }
-        // });
-
-        this.logger.log(`Event ${eventType} sent to ${topic}`);
+        this.logger.log(`Event sent to ${topic}`);
     }
 }
 
