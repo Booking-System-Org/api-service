@@ -11,11 +11,11 @@ provision: env-setup build install start
 
 env-setup:
 	@if [ ! -f .env ]; then \
-		echo "Создание .env файла из env.example..."; \
+		echo "Creating .env file from env.example..."; \
 		cp env.example .env; \
-		echo ".env файл создан! Измените переменные если необходимо."; \
+		echo ".env file created! Change variables if necessary."; \
 	else \
-		echo ".env файл уже существует."; \
+		echo ".env file already exists."; \
 	fi
 
 start:
