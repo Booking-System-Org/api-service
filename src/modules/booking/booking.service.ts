@@ -6,7 +6,6 @@ import { BookingRepository } from './booking.repository';
 import { CreateBookingDto } from './dtos';
 import { KafkaProducerService } from 'src/infra/kafka/kafka.producer.service';
 import { CreateBookingEvent } from 'src/infra/kafka/kafka.contracts';
-import { ConfigService } from '@nestjs/config';
 import { KafkaMessage } from 'src/infra/kafka/types';
 import { KafkaTopics } from 'src/infra/kafka/constants';
 
@@ -17,7 +16,6 @@ export class BookingService {
   constructor(
     private readonly bookingRepository: BookingRepository,
     private readonly kafkaService: KafkaProducerService,
-    private readonly configService: ConfigService,
   ) {
     this.logger = new Logger(BookingService.name);
   }
